@@ -21,7 +21,7 @@ internal class TaskService
         var orderedTasks = tasks.OrderBy(x => x.DueDate).ToList();
         return orderedTasks;
     }
-    public void HandleExitMenuInput(ConsoleKey input, ref bool exitProgram)
+    public static void HandleExitMenuInput(ConsoleKey input, ref bool exitProgram)
     {
         if (input == ConsoleKey.Enter)
         {
@@ -170,7 +170,7 @@ internal class TaskService
         Console.Clear();
         switch (_taskMenu.updateIndex)
         {
-            case 0: 
+            case 0:
                 Console.Write("Title: ");
                 string title = Console.ReadLine()!;
                 //_tasks[_taskMenu.overviewIndex].Title = Console.ReadLine()!; 
@@ -182,7 +182,7 @@ internal class TaskService
                 //_tasks[_taskMenu.overviewIndex].Description = Console.ReadLine()!; 
                 break;
 
-            case 2: 
+            case 2:
                 Console.WriteLine("Due date(DD/MM): ");
                 DateTime duedate = DateTime.Parse(Console.ReadLine()!);
                 //_tasks[_taskMenu.overviewIndex].DueDate = DateTime.Parse(Console.ReadLine()!); 
@@ -193,16 +193,13 @@ internal class TaskService
                 CompleteTask();
                 break;
 
-            case 4: 
-                Console.WriteLine("Exiting.."); 
+            case 4:
+                Console.WriteLine("Exiting..");
                 break;
 
         }
 
-        
-
         _repository.SaveAllTasks(_tasks);
-
 
     }
 
@@ -219,7 +216,7 @@ internal class TaskService
         }
     }
 
-    public void DeleteTask()
+    private void DeleteTask()
     {
         Console.Clear();
         Console.WriteLine($"{_tasks[_taskMenu.overviewIndex].Title} Deleted!");
@@ -229,7 +226,7 @@ internal class TaskService
         _repository.SaveAllTasks(_tasks);
     }
 
-    private string? ReadInputWithEscape(string prompt)
+    private static string? ReadInputWithEscape(string prompt)
     {
         Console.Write(prompt);
         string input = string.Empty;
@@ -263,7 +260,7 @@ internal class TaskService
         return input;
     }
 
-    public void AddTask()
+    private void AddTask()
     {
         //UserTask task = new UserTask();
 

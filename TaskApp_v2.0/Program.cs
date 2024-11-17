@@ -28,7 +28,7 @@ internal class Program
                 case MainMenu.MenuState.Exit:
                     MainMenu.DisplayExit();
                     exitMenuChoice = MainMenu.GetUserInput();
-                    taskService.HandleExitMenuInput(exitMenuChoice, ref exitProgram);
+                    TaskService.HandleExitMenuInput(exitMenuChoice, ref exitProgram);
                     break;
 
                 default:

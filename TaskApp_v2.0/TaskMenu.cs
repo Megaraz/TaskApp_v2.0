@@ -14,8 +14,8 @@ internal class TaskMenu
         s_tasks = tasks;
     }
 
-    private static string[] menuOverview = { "Update task", "Delete task", "Mark as completed", "Exit" };
-    private static string[] menuSpecific = { "Update Title", "Update Description", "Update Due Date", "Mark as completed", "Exit" };
+    private readonly string[] _menuOverview = { "Update task", "Delete task", "Mark as completed", "Exit" };
+    private readonly string[] _menuSpecific = { "Update Title", "Update Description", "Update Due Date", "Mark as completed", "Exit" };
 
     public enum MenuState
     {
@@ -58,9 +58,7 @@ internal class TaskMenu
                     Console.WriteLine($"{task.Title!.ToUpper()}");
                     Console.ResetColor();
                 }
-
             }
-
         }
         else
         {
@@ -68,9 +66,7 @@ internal class TaskMenu
             Console.WriteLine("Task List is Empty! Add new tasks in Main Menu");
             Thread.Sleep(2000);
             MainMenu.CurrentMenuState = MainMenu.MenuState.Main;
-
         }
-
     }
     public ConsoleKey GetUserInput()
     {
@@ -82,12 +78,11 @@ internal class TaskMenu
             case MenuState.Overview: 
                 (input, overviewIndex) = MenuSelection.GetUserInput(overviewIndex, s_tasks!.Count, MenuSelection.NavigationDirection.Vertical); break;
             case MenuState.Specific: 
-                (input, specificIndex) = MenuSelection.GetUserInput(specificIndex, menuOverview.Length, MenuSelection.NavigationDirection.Horizontal); break;
+                (input, specificIndex) = MenuSelection.GetUserInput(specificIndex, _menuOverview.Length, MenuSelection.NavigationDirection.Horizontal); break;
             case MenuState.Update: 
-                (input, updateIndex) = MenuSelection.GetUserInput(updateIndex, menuSpecific.Length, MenuSelection.NavigationDirection.Horizontal); break;
+                (input, updateIndex) = MenuSelection.GetUserInput(updateIndex, _menuSpecific.Length, MenuSelection.NavigationDirection.Horizontal); break;
             default: 
                 input = ConsoleKey.None; break;
-
         }
 
         return input;
@@ -106,17 +101,17 @@ internal class TaskMenu
         Console.WriteLine();
         Console.WriteLine();
 
-        for (int i = 0; i < menuOverview.Length; i++)
+        for (int i = 0; i < _menuOverview.Length; i++)
         {
             if (i == specificIndex)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write($"{menuOverview[i]}\t");
+                Console.Write($"{_menuOverview[i]}\t");
                 Console.ResetColor();
             }
             else
             {
-                Console.Write($"{menuOverview[i]}\t");
+                Console.Write($"{_menuOverview[i]}\t");
                 Console.ResetColor();
             }
         }
@@ -124,8 +119,6 @@ internal class TaskMenu
     }
     public void DisplaySpecificUpdateChoices()
     {
-        ConsoleKey updateSelection;
-
         
         Console.Clear();
         Console.Write($"{s_tasks![overviewIndex].DueDate:MM/dd}".PadRight(20));
@@ -136,17 +129,17 @@ internal class TaskMenu
         Console.WriteLine();
         Console.WriteLine();
 
-        for (int i = 0; i < menuSpecific.Length; i++)
+        for (int i = 0; i < _menuSpecific.Length; i++)
         {
             if (i == updateIndex)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write($"{menuSpecific[i]}\t");
+                Console.Write($"{_menuSpecific[i]}\t");
                 Console.ResetColor();
             }
             else
             {
-                Console.Write($"{menuSpecific[i]}\t");
+                Console.Write($"{_menuSpecific[i]}\t");
                 Console.ResetColor();
             }
         }
