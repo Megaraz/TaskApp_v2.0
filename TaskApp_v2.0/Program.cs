@@ -6,8 +6,8 @@ internal class Program
     static void Main(string[] args)
     {
         string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory + "UserTasks.json");
-        TaskRepository repository = new TaskRepository(filePath);
-        TaskService taskService = new TaskService(repository);
+        TaskRepository repository = new(filePath);
+        TaskService taskService = new(repository);
 
 
 
@@ -40,7 +40,6 @@ internal class Program
             {
                 Console.Clear();
                 Console.WriteLine("Program has exited. Goodbye!");
-
 
             }
 

@@ -1,21 +1,14 @@
 ﻿using System.Text.Json;
 
 namespace TaskApp_v2._0;
-public class TaskRepository
+public class TaskRepository(string filePath)
 {
-    private readonly string _filePath;
-
-    public TaskRepository(string filePath)
-    {
-        _filePath = filePath;
-    }
-
     public List<UserTask> GetAllTasks()
     {
         string json;
         try
         {
-            json = File.ReadAllText(_filePath);
+            json = File.ReadAllText(filePath);
             return JsonSerializer.Deserialize<List<UserTask>>(json)!;
         }
         catch (FileNotFoundException)
@@ -28,7 +21,7 @@ public class TaskRepository
     public void SaveAllTasks(List<UserTask> tasks)
     {
         string json = JsonSerializer.Serialize(tasks);
-        File.WriteAllText(_filePath, json);
+        File.WriteAllText(filePath, json);
 
     }
 }

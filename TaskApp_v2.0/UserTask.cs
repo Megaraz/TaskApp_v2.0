@@ -1,18 +1,10 @@
 ﻿namespace TaskApp_v2._0;
-public class UserTask
+public class UserTask(string title, string description, DateTime dueDate)
 {
-    public UserTask(string title, string description, DateTime dueDate)
-    {
-        Id = Guid.NewGuid(); 
-        Title = title;
-        Description = description;
-        DueDate = dueDate;
-    }
-
-    public Guid Id { get; private set; } 
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public DateTime DueDate { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
+    public string Title { get; set; } = title;
+    public string Description { get; set; } = description;
+    public DateTime DueDate { get; set; } = dueDate;
     public bool IsCompleted { get; set; }
 
 }
