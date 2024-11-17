@@ -4,14 +4,14 @@ namespace TaskApp_v2._0;
 
 static class MainMenu
 {
-    public static readonly string[] s_MainItems =
+    private static readonly string[] s_mainItems =
     [
         "Add new task",
         "Show tasks",
         "Save & exit"
     ];
 
-    public static readonly string[] s_ExitItems =
+    private static readonly string[] s_exitItems =
     [
         "Yes exit program",
         "No go back to Main Menu"
@@ -35,17 +35,17 @@ static class MainMenu
         Console.Clear();
         Console.WriteLine("TASKMANAGER");
 
-        for (int i = 0; i < s_MainItems.Length; i++)
+        for (int i = 0; i < s_mainItems.Length; i++)
         {
             if (i == MainIndex)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"[{i + 1}]. {s_MainItems[i]}");
+                Console.WriteLine($"[{i + 1}]. {s_mainItems[i]}");
                 Console.ResetColor();
             }
             else
             {
-                Console.WriteLine($"[{i + 1}]. {s_MainItems[i]}");
+                Console.WriteLine($"[{i + 1}]. {s_mainItems[i]}");
                 Console.ResetColor();
             }
         }
@@ -58,17 +58,17 @@ static class MainMenu
         Console.WriteLine("ARE YOU SURE YOU WANT TO EXIT?");
         Console.WriteLine();
 
-        for (int i = 0; i < s_ExitItems.Length; i++)
+        for (int i = 0; i < s_exitItems.Length; i++)
         {
             if (i == ExitIndex)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write($"[{s_ExitItems[i]}]".PadRight(20));
+                Console.Write($"[{s_exitItems[i]}]".PadRight(20));
                 Console.ResetColor();
             }
             else
             {
-                Console.Write($"[{s_ExitItems[i]}]".PadRight(20));
+                Console.Write($"[{s_exitItems[i]}]".PadRight(20));
                 Console.ResetColor();
             }
         }
@@ -80,11 +80,11 @@ static class MainMenu
         switch (CurrentMenuState)
         {
             case MenuState.Main:  
-                (ConsoleKey mainInput, MainIndex) = MenuSelection.GetUserInput(MainIndex, s_MainItems.Length, MenuSelection.NavigationDirection.Vertical);
+                (ConsoleKey mainInput, MainIndex) = MenuSelection.GetUserInput(MainIndex, s_mainItems.Length, MenuSelection.NavigationDirection.Vertical);
                 return mainInput;
 
             case MenuState.Exit:
-                (ConsoleKey exitInput, ExitIndex) = MenuSelection.GetUserInput(ExitIndex, s_ExitItems.Length, MenuSelection.NavigationDirection.Horizontal);
+                (ConsoleKey exitInput, ExitIndex) = MenuSelection.GetUserInput(ExitIndex, s_exitItems.Length, MenuSelection.NavigationDirection.Horizontal);
                 return exitInput;
 
             default:
