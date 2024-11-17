@@ -73,9 +73,6 @@ static class MainMenu
             }
         }
 
-        //Console.WriteLine();
-        //Console.WriteLine();
-        //Console.WriteLine("Use Left/Right arrows to navigate, Enter to select.");
     }
 
     public static ConsoleKey GetUserInput()

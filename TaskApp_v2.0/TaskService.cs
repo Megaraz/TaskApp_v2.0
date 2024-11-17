@@ -71,14 +71,14 @@ internal class TaskService
                     break;
             }
         }
-        //else if (input == ConsoleKey.Escape)
-        //{
-        //    // Optionally handle Esc key in main menu
-        //    MainMenu.CurrentMenuState = MenuState.Exit;
-        //}
+        else if (input == ConsoleKey.Escape)
+        {
+            // Optionally handle Esc key in main menu
+            MainMenu.CurrentMenuState = MainMenu.MenuState.Exit;
+        }
     }
 
-    public void HandleSpecificTaskMenuInput(ConsoleKey input)
+    private void HandleSpecificTaskMenuInput(ConsoleKey input)
     {
         if (input == ConsoleKey.Enter)
         {
@@ -110,11 +110,10 @@ internal class TaskService
     }
 
 
-    public void TaskMenuLogic()
+    private void TaskMenuLogic()
     {
         ConsoleKey input;
         bool isMenu;
-        
 
         do
         {
@@ -166,24 +165,27 @@ internal class TaskService
 
     }
 
-    public void UpdateTask()
+    private void UpdateTask()
     {
         Console.Clear();
         switch (_taskMenu.updateIndex)
         {
             case 0: 
-                Console.Write("Title: "); 
-                _tasks[_taskMenu.overviewIndex].Title = Console.ReadLine()!; 
+                Console.Write("Title: ");
+                string title = Console.ReadLine()!;
+                //_tasks[_taskMenu.overviewIndex].Title = Console.ReadLine()!; 
                 break;
 
             case 1:
-                Console.WriteLine("Task description: "); 
-                _tasks[_taskMenu.overviewIndex].Description = Console.ReadLine()!; 
+                Console.WriteLine("Task description: ");
+                string description = Console.ReadLine()!;
+                //_tasks[_taskMenu.overviewIndex].Description = Console.ReadLine()!; 
                 break;
 
             case 2: 
-                Console.WriteLine("Due date(DD/MM): "); 
-                _tasks[_taskMenu.overviewIndex].DueDate = DateTime.Parse(Console.ReadLine()!); 
+                Console.WriteLine("Due date(DD/MM): ");
+                DateTime duedate = DateTime.Parse(Console.ReadLine()!);
+                //_tasks[_taskMenu.overviewIndex].DueDate = DateTime.Parse(Console.ReadLine()!); 
                 break;
 
             case 3:
@@ -196,6 +198,8 @@ internal class TaskService
                 break;
 
         }
+
+        
 
         _repository.SaveAllTasks(_tasks);
 
@@ -225,37 +229,145 @@ internal class TaskService
         _repository.SaveAllTasks(_tasks);
     }
 
+    private string? ReadInputWithEscape(string prompt)
+    {
+        Console.Write(prompt);
+        string input = string.Empty;
+        ConsoleKey key;
+
+        do
+        {
+            var keyInfo = Console.ReadKey(intercept: true);
+            key = keyInfo.Key;
+
+            if (key == ConsoleKey.Escape)
+            {
+                return null; // Indicate cancellation
+            }
+            else if (key == ConsoleKey.Backspace)
+            {
+                if (input.Length > 0)
+                {
+                    input = input[0..^1];
+                    Console.Write("\b \b");
+                }
+            }
+            else if (!char.IsControl(keyInfo.KeyChar))
+            {
+                input += keyInfo.KeyChar;
+                Console.Write(keyInfo.KeyChar);
+            }
+        } while (key != ConsoleKey.Enter);
+
+        Console.WriteLine();
+        return input;
+    }
+
     public void AddTask()
     {
-        
-        UserTask task = new UserTask();
+        //UserTask task = new UserTask();
 
         Console.Clear();
+        Console.WriteLine("=== Add New Task ===");
+        
 
-        Console.Write("Title: ");
-        task.Title = Console.ReadLine()!;
+        // Prompt for Title
+        string? title = ReadInputWithEscape("Title: ");
+        if (title == null)
+        {
+            CancelOperation();
+            return;
+        }
+        else if (title.Length == 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Task needs a title!");
+            Thread.Sleep(1250);
+            return;
+        }
+        //task.Title = title;
 
-        Console.WriteLine("Task description: ");
-        task.Description = Console.ReadLine()!;
+        // Prompt for Description
+        string? description = ReadInputWithEscape("Task Description: ");
+        if (description == null)
+        {
+            CancelOperation();
+            return;
+        }
+        //task.Description = description;
+
+        // Prompt for Due Date
+        string? dueDateInput = ReadInputWithEscape("Due Date (MM/dd): ");
+        if (dueDateInput == null)
+        {
+            CancelOperation();
+            return;
+        }
 
 
-        Console.WriteLine("Due date(DD/MM): ");
-        string dueDate = Console.ReadLine()!;
+        DateTime dueDate;
+        // Parse Due Date
         try
         {
-            task.DueDate = DateTime.Parse(dueDate);
-
+            dueDate = DateTime.ParseExact(dueDateInput, "MM/dd", null);
         }
         catch
         {
-            Console.WriteLine("Not valid date, setting default");
-            task.DueDate = Convert.ToDateTime(DateTime.MaxValue);
+            Console.WriteLine("Invalid date format. Setting Due Date to MaxValue.");
+            dueDate = DateTime.MaxValue;
         }
 
+        UserTask task = new UserTask(title, description, dueDate);
 
+
+        // Add Task to List and Save
         _tasks.Add(task);
         _repository.SaveAllTasks(_tasks);
-        Console.WriteLine($"{task.Title} added.");
-
+        Console.WriteLine($"\nTask '{task.Title}' added successfully!");
+        Console.WriteLine("Press any key to return to the main menu.");
+        Console.ReadKey();
     }
+
+    private void CancelOperation()
+    {
+        Console.WriteLine("\nOperation canceled. Returning to the main menu...");
+        Thread.Sleep(1000);
+        MainMenu.CurrentMenuState = MainMenu.MenuState.Main;
+    }
+
+
+
+    //public void AddTask()
+    //{
+
+    //    UserTask task = new UserTask();
+
+    //    Console.Clear();
+
+    //    Console.Write("Title: ");
+    //    task.Title = Console.ReadLine()!;
+
+    //    Console.WriteLine("Task description: ");
+    //    task.Description = Console.ReadLine()!;
+
+
+    //    Console.WriteLine("Due date(DD/MM): ");
+    //    string dueDate = Console.ReadLine()!;
+    //    try
+    //    {
+    //        task.DueDate = DateTime.Parse(dueDate);
+
+    //    }
+    //    catch
+    //    {
+    //        Console.WriteLine("Not valid date, setting default");
+    //        task.DueDate = Convert.ToDateTime(DateTime.MaxValue);
+    //    }
+
+
+    //    _tasks.Add(task);
+    //    _repository.SaveAllTasks(_tasks);
+    //    Console.WriteLine($"{task.Title} added.");
+
+    //}
 }

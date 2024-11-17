@@ -2,8 +2,7 @@
 
 internal class Program
 {
-    //const string _jsonFile = "UserTasks.json";
-    //static readonly string s_filePath = AppDomain.CurrentDomain.BaseDirectory + _jsonFile;
+    
     static void Main(string[] args)
     {
         string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory + "UserTasks.json");
