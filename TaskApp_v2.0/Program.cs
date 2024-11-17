@@ -12,30 +12,40 @@ internal class Program
 
 
 
-        bool continueProgram;
+        bool exitProgram = false;
         ConsoleKey mainMenuChoice;
-
+        ConsoleKey exitMenuChoice;
 
         do
         {
-            MainMenu.Display();
-
-            mainMenuChoice = MainMenu.GetUserInput();
-
-            continueProgram = !(mainMenuChoice == ConsoleKey.Enter || mainMenuChoice == ConsoleKey.Escape);
-
-            if (mainMenuChoice == ConsoleKey.Enter)
+            switch (MainMenu.CurrentMenuState)
             {
-                switch (MainMenu.Index)
-                {
-                    case 0: taskService.AddTask(); break;
-                    case 1: taskService._taskMenu.isOverviewMenu = true; taskService.TaskMenuLogic(); break;
-                    case 2: Console.Clear(); Console.WriteLine($"Exiting program.."); Thread.Sleep(1000); break;
-                    default: Console.WriteLine($"{Environment.NewLine}Invalid choice"); Thread.Sleep(500); Console.Clear(); break;
-                }
+                case MainMenu.MenuState.Main: 
+                    MainMenu.DisplayMain(); 
+                    mainMenuChoice = MainMenu.GetUserInput();
+                    taskService.HandleMainMenuInput(mainMenuChoice, ref exitProgram);
+                    break;
+
+                case MainMenu.MenuState.Exit:
+                    MainMenu.DisplayExit();
+                    exitMenuChoice = MainMenu.GetUserInput();
+                    taskService.HandleExitMenuInput(exitMenuChoice, ref exitProgram);
+                    break;
+
+                default:
+                    exitProgram = true;
+                    break;
             }
 
-        } while (continueProgram);
+            if (exitProgram)
+            {
+                Console.Clear();
+                Console.WriteLine("Program has exited. Goodbye!");
+
+
+            }
+
+        } while (!exitProgram);
 
     }
 

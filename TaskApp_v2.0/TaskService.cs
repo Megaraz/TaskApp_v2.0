@@ -1,4 +1,6 @@
-﻿namespace TaskApp_v2._0;
+﻿using System.ComponentModel.Design;
+
+namespace TaskApp_v2._0;
 internal class TaskService
 {
 
@@ -19,96 +21,213 @@ internal class TaskService
         var orderedTasks = tasks.OrderBy(x => x.DueDate).ToList();
         return orderedTasks;
     }
+    public void HandleExitMenuInput(ConsoleKey input, ref bool exitProgram)
+    {
+        if (input == ConsoleKey.Enter)
+        {
+            switch (MainMenu.ExitIndex)
+            {
+                case 0:
+                    // Yes, exit program
+                    exitProgram = true;
+                    break;
+                case 1:
+                    // No, go back to main menu
+                    MainMenu.CurrentMenuState = MainMenu.MenuState.Main;
+                    break;
+                default:
+                    Console.WriteLine($"{Environment.NewLine}Invalid choice");
+                    Thread.Sleep(500);
+                    break;
+            }
+        }
+        else if (input == ConsoleKey.Escape)
+        {
+            // Cancel exit and return to main menu
+            MainMenu.CurrentMenuState = MainMenu.MenuState.Main;
+        }
+    }
+
+
+    public void HandleMainMenuInput(ConsoleKey input, ref bool exitProgram)
+    {
+        if (input == ConsoleKey.Enter)
+        {
+            switch (MainMenu.MainIndex)
+            {
+                case 0:
+                    AddTask();
+                    break;
+                case 1:
+                    _taskMenu.CurrentMenuState = TaskMenu.MenuState.Overview;
+                    TaskMenuLogic();
+                    break;
+                case 2:
+                    MainMenu.CurrentMenuState = MainMenu.MenuState.Exit;
+                    break;
+                default:
+                    Console.WriteLine($"{Environment.NewLine}Invalid choice");
+                    Thread.Sleep(500);
+                    break;
+            }
+        }
+        //else if (input == ConsoleKey.Escape)
+        //{
+        //    // Optionally handle Esc key in main menu
+        //    MainMenu.CurrentMenuState = MenuState.Exit;
+        //}
+    }
+
+    public void HandleSpecificTaskMenuInput(ConsoleKey input)
+    {
+        if (input == ConsoleKey.Enter)
+        {
+            switch (_taskMenu.specificIndex)
+            {
+                case 0:
+                    _taskMenu.CurrentMenuState = TaskMenu.MenuState.Update;
+                    break;
+
+                case 1:
+                    _taskMenu.CurrentMenuState = TaskMenu.MenuState.Delete;
+                    break;
+
+                case 2:
+                    _tasks[_taskMenu.overviewIndex].IsCompleted = true;
+                    CompleteTask();
+                    _taskMenu.CurrentMenuState = TaskMenu.MenuState.Overview;
+                    break;
+
+                case 3:
+                    _taskMenu.CurrentMenuState = TaskMenu.MenuState.Exit;
+                    break;
+            }
+        }
+        else if (input == ConsoleKey.Escape)
+        {
+            _taskMenu.CurrentMenuState = TaskMenu.MenuState.Overview;
+        }
+    }
+
 
     public void TaskMenuLogic()
     {
         ConsoleKey input;
+        bool isMenu;
+        
 
         do
         {
-            _taskMenu.DisplayAllTasks();
-            _taskMenu.GetUserInput();
-
-            
-
-
-        } while (true);
-
-
-
-
-
-        if (_taskMenu.isOverviewMenu)
-        {
-            do
+            switch (_taskMenu.CurrentMenuState)
             {
-                _taskMenu.DisplayAllTasks();
-                input = _taskMenu.GetUserInput();
+                case TaskMenu.MenuState.Overview: 
+                    _taskMenu.DisplayAllTasks();
+                    if (_tasks.Count > 0)
+                    {
+                        input = _taskMenu.GetUserInput();
+                    if (input == ConsoleKey.Enter)
+                        _taskMenu.CurrentMenuState = TaskMenu.MenuState.Specific;
+                    else if (input == ConsoleKey.Escape)
+                        _taskMenu.CurrentMenuState = TaskMenu.MenuState.None;
+                    }
+                    else
+                        _taskMenu.CurrentMenuState = TaskMenu.MenuState.None;
+                    break;
 
-                _taskMenu.isOverviewMenu = !(input == ConsoleKey.Enter || input == ConsoleKey.Escape);
 
-                if (!_taskMenu.isOverviewMenu)
-                    _taskMenu.isSpecificMenu = true;
+                case TaskMenu.MenuState.Delete:
+                    DeleteTask();
+                    _taskMenu.CurrentMenuState = TaskMenu.MenuState.Overview;
+                    break;
+                    
 
+                case TaskMenu.MenuState.Specific:
+                    _taskMenu.DisplaySpecificTask();
+                    input = _taskMenu.GetUserInput();
+                    HandleSpecificTaskMenuInput(input);
+                    break;
 
-            } while (_taskMenu.isOverviewMenu);
-        }
-        if (_taskMenu.isSpecificMenu)
-        {
-            do
-            {
-                _taskMenu.DisplaySpecificTask();
-                input = _taskMenu.GetUserInput();
+                case TaskMenu.MenuState.Update:
+                    _taskMenu.DisplaySpecificUpdateChoices();
+                    input = _taskMenu.GetUserInput();
+                    if (input == ConsoleKey.Enter)
+                    {
+                        UpdateTask();
+                        _taskMenu.CurrentMenuState = TaskMenu.MenuState.Specific; 
+                    }
+                    else if (input == ConsoleKey.Escape)
+                        _taskMenu.CurrentMenuState = TaskMenu.MenuState.Specific;
+                    break;
+            }
 
-                _taskMenu.isSpecificMenu = !(input == ConsoleKey.Enter || input == ConsoleKey.Escape);
+            isMenu = !(_taskMenu.CurrentMenuState == TaskMenu.MenuState.None || _taskMenu.CurrentMenuState == TaskMenu.MenuState.Exit);
 
-                if (!_taskMenu.isSpecificMenu)
-                    _taskMenu.isUpdateMenu = true;
-
-            } while (_taskMenu.isSpecificMenu);
-        }
-        if (_taskMenu.isUpdateMenu)
-        {
-            do
-            {
-                _taskMenu.DisplaySpecificUpdateChoices();
-                input = _taskMenu.GetUserInput();
-
-                _taskMenu.isUpdateMenu = !(input == ConsoleKey.Enter || input == ConsoleKey.Escape);
-
-                if (input == ConsoleKey.Enter && _taskMenu.updateIndex < 3)
-                {
-                    UpdateTask();
-                }
-
-                if (!_taskMenu.isUpdateMenu)
-                    _taskMenu.isSpecificMenu = true;
-
-            } while (_taskMenu.isUpdateMenu);
-        }
-
+        } while (isMenu);
 
     }
 
     public void UpdateTask()
     {
-        //var taskToUpdate = _tasks[_taskMenu.overviewIndex];
-
+        Console.Clear();
         switch (_taskMenu.updateIndex)
         {
-            case 0: Console.Write("Title: "); _tasks[_taskMenu.overviewIndex].Title = Console.ReadLine()!; break;
-            case 1: Console.WriteLine("Task description: "); _tasks[_taskMenu.overviewIndex].Description = Console.ReadLine()!; break;
-            case 2: Console.WriteLine("Due date(DD/MM): "); _tasks[_taskMenu.overviewIndex].DueDate = DateTime.Parse(Console.ReadLine()!); break;
-            case 3: Console.WriteLine("Task completed!"); _tasks[_taskMenu.overviewIndex].IsCompleted = true; break;
-            case 4: Console.WriteLine("Exiting.."); break;
+            case 0: 
+                Console.Write("Title: "); 
+                _tasks[_taskMenu.overviewIndex].Title = Console.ReadLine()!; 
+                break;
+
+            case 1:
+                Console.WriteLine("Task description: "); 
+                _tasks[_taskMenu.overviewIndex].Description = Console.ReadLine()!; 
+                break;
+
+            case 2: 
+                Console.WriteLine("Due date(DD/MM): "); 
+                _tasks[_taskMenu.overviewIndex].DueDate = DateTime.Parse(Console.ReadLine()!); 
+                break;
+
+            case 3:
+                _tasks[_taskMenu.overviewIndex].IsCompleted = true;
+                CompleteTask();
+                break;
+
+            case 4: 
+                Console.WriteLine("Exiting.."); 
+                break;
 
         }
+
+        _repository.SaveAllTasks(_tasks);
 
 
     }
 
+    private void CompleteTask()
+    {
+        Console.Clear();
+        Console.WriteLine($"{_tasks[_taskMenu.overviewIndex].Title} Completed!");
+        Thread.Sleep(1000);
+        
+        if (_tasks[_taskMenu.overviewIndex].IsCompleted)
+        {
+            _tasks.Remove(_tasks[_taskMenu.overviewIndex]);
+            _repository.SaveAllTasks(_tasks);
+        }
+    }
+
+    public void DeleteTask()
+    {
+        Console.Clear();
+        Console.WriteLine($"{_tasks[_taskMenu.overviewIndex].Title} Deleted!");
+        Thread.Sleep(1000);
+
+        _tasks.Remove(_tasks[_taskMenu.overviewIndex]);
+        _repository.SaveAllTasks(_tasks);
+    }
+
     public void AddTask()
     {
+        
         UserTask task = new UserTask();
 
         Console.Clear();

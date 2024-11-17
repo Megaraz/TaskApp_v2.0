@@ -8,53 +8,42 @@ namespace TaskApp_v2._0;
 public static class MenuSelection
 {
 
+    public enum NavigationDirection
+    {
+        Vertical,
+        Horizontal
+    }
 
-    public static (ConsoleKey input, int index) GetUserInputVertical(int index, int length)
+    public static (ConsoleKey input, int index) GetUserInput(int currentIndex, int length, NavigationDirection direction)
     {
         ConsoleKey input = Console.ReadKey(true).Key;
         switch (input)
         {
-            case ConsoleKey.UpArrow: index--; break;
-            case ConsoleKey.DownArrow: index++; break;
+            case ConsoleKey.UpArrow when direction == NavigationDirection.Vertical: 
+                currentIndex--; break;
+            case ConsoleKey.DownArrow when direction == NavigationDirection.Vertical: 
+                currentIndex++; break;
+            case ConsoleKey.LeftArrow when direction == NavigationDirection.Horizontal: 
+                currentIndex--; break;
+            case ConsoleKey.RightArrow when direction == NavigationDirection.Horizontal: 
+                currentIndex++; break;
             case ConsoleKey.Enter: break;
-            case ConsoleKey.Escape: Console.Clear(); Console.WriteLine($"Exiting.."); Thread.Sleep(1000); break;
+            case ConsoleKey.Escape: break;
+            
             default: Console.WriteLine($"{Environment.NewLine}Invalid choice"); Thread.Sleep(500); Console.Clear(); break;
         }
 
-        if (index < 0)
+        if (currentIndex < 0)
         {
-            index = length - 1;
+            currentIndex = length - 1;
         }
-        else if (index >= length)
+        else if (currentIndex >= length)
         {
-            index = 0;
+            currentIndex = 0;
         }
 
-        return (input, index);
+        return (input, currentIndex);
     }
 
-    public static (ConsoleKey input, int index)GetUserInputHorizontal(int index, int length)
-    {
-        ConsoleKey input = Console.ReadKey(true).Key;
-        switch (input)
-        {
-            case ConsoleKey.LeftArrow: index--; break;
-            case ConsoleKey.RightArrow: index++; break;
-            case ConsoleKey.Enter: break;
-            case ConsoleKey.Escape: Console.Clear(); Console.WriteLine($"Exiting.."); Thread.Sleep(1000); break;
-            default: Console.WriteLine($"{Environment.NewLine}Invalid choice"); Thread.Sleep(500); Console.Clear(); break;
-        }
 
-        if (index < 0)
-        {
-            index = length - 1;
-        }
-        else if (index >= length)
-        {
-            index = 0;
-        }
-        
-
-        return (input, index);
-    }
 }

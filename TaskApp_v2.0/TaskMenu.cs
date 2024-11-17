@@ -17,63 +17,80 @@ internal class TaskMenu
     private static string[] menuOverview = { "Update task", "Delete task", "Mark as completed", "Exit" };
     private static string[] menuSpecific = { "Update Title", "Update Description", "Update Due Date", "Mark as completed", "Exit" };
 
+    public enum MenuState
+    {
+        None,
+        Overview,
+        Specific,
+        Update,
+        Delete,
+        Exit
+    }
+    public MenuState CurrentMenuState { get; set; } = MenuState.Overview;
+
 
     public int overviewIndex = 0;
     public int specificIndex = 0;
     public int updateIndex = 0;
 
-    public bool isOverviewMenu = false;
-    public bool isSpecificMenu = false;
-    public bool isUpdateMenu = false;
 
     public void DisplayAllTasks()
     {
         Console.Clear();
         Console.WriteLine("DUE DATE(MM/dd)".PadRight(20) + "TASKS");
         Console.WriteLine();
-        for (int i = 0; i < s_tasks!.Count; i++)
+
+        if (s_tasks!.Count > 0)
         {
-            UserTask? task = s_tasks![i];
-            if (i == overviewIndex)
+            for (int i = 0; i < s_tasks!.Count; i++)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write($"{task.DueDate:MM/dd}".PadRight(20));
-                Console.WriteLine($"{task.Title!.ToUpper()}");
-                Console.ResetColor();
-            }
-            else
-            {
-                Console.Write($"{task.DueDate:MM/dd}".PadRight(20));
-                Console.WriteLine($"{task.Title!.ToUpper()}");
-                Console.ResetColor();
+                UserTask? task = s_tasks![i];
+                if (i == overviewIndex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write($"{task.DueDate:MM/dd}".PadRight(20));
+                    Console.WriteLine($"{task.Title!.ToUpper()}");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.Write($"{task.DueDate:MM/dd}".PadRight(20));
+                    Console.WriteLine($"{task.Title!.ToUpper()}");
+                    Console.ResetColor();
+                }
+
             }
 
         }
+        else
+        {
+            Console.Clear();
+            Console.WriteLine("Task List is Empty! Add new tasks in Main Menu");
+            Thread.Sleep(2000);
+            MainMenu.CurrentMenuState = MainMenu.MenuState.Main;
+
+        }
+
     }
     public ConsoleKey GetUserInput()
     {
-        ConsoleKey menuOverviewInput;
-        ConsoleKey menuSpecificInput;
-        ConsoleKey menuUpdateInput;
+        
+        ConsoleKey input;
 
+        switch (CurrentMenuState)
+        {
+            case MenuState.Overview: 
+                (input, overviewIndex) = MenuSelection.GetUserInput(overviewIndex, s_tasks!.Count, MenuSelection.NavigationDirection.Vertical); break;
+            case MenuState.Specific: 
+                (input, specificIndex) = MenuSelection.GetUserInput(specificIndex, menuOverview.Length, MenuSelection.NavigationDirection.Horizontal); break;
+            case MenuState.Update: 
+                (input, updateIndex) = MenuSelection.GetUserInput(updateIndex, menuSpecific.Length, MenuSelection.NavigationDirection.Horizontal); break;
+            default: 
+                input = ConsoleKey.None; break;
 
-        if (isOverviewMenu)
-        {
-            (menuOverviewInput, overviewIndex) = MenuSelection.GetUserInputVertical(overviewIndex, s_tasks!.Count);
-            return menuOverviewInput;
-        }
-        else if (isSpecificMenu)
-        {
-            (menuSpecificInput, specificIndex) = MenuSelection.GetUserInputHorizontal(specificIndex, menuOverview.Length);
-            return menuSpecificInput;
-        }
-        else if (isUpdateMenu)
-        {
-            (menuUpdateInput, updateIndex) = MenuSelection.GetUserInputHorizontal(updateIndex, menuSpecific.Length);
-            return menuUpdateInput;
         }
 
-        return ConsoleKey.None;
+        return input;
 
     }
 
