@@ -13,9 +13,14 @@ public class TaskRepository(string filePath)
         }
         catch (FileNotFoundException)
         {
+            Console.WriteLine("Error reading tasks file. Starting with an empty list.");
             return new List<UserTask>();
         }
-
+        catch (JsonException ex)
+        {
+            Console.WriteLine("Error reading tasks file. Starting with an empty list.");
+            return new List<UserTask>();
+        }
     }
 
     public void SaveAllTasks(List<UserTask> tasks)
